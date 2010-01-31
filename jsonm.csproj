@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{94565AC9-F1B4-4B6B-A312-893BE3556E46}</ProjectGuid>
+    <ProjectTypeGuids>{17FE9F8A-9871-45AE-ADAA-036EB50C1284};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>jsonm</RootNamespace>
+    <AssemblyName>jsonm</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PlatformTarget>x86</PlatformTarget>
+    <OsloInstallPath>$(Registry:HKEY_LOCAL_MACHINE\Software\Microsoft\Oslo\1.0\Installer\@InstallPath)</OsloInstallPath>
+    <OsloInstallPath Condition="'$(OsloInstallPath)' == ''">$(Registry:HKEY_LOCAL_MACHINE\Software\Wow6432Node\Microsoft\Oslo\1.0\Installer\@InstallPath)</OsloInstallPath>
+    <SdkBinPath>$(OsloInstallPath)1.0\Bin</SdkBinPath>
+    <MDLL>$(SdkBinPath)\Microsoft.M.dll</MDLL>
+    <MTargetsPath Condition="$(MTargetsPath) == ''">$(MSBuildExtensionsPath32)\Microsoft\M\v1.0</MTargetsPath>
+    <StartupObject />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="$(MDLL)" />
+    <Reference Include="System.Dataflow">
+      <HintPath>..\..\..\..\..\Program Files\Microsoft Oslo\1.0\bin\System.Dataflow.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Runtime.Serialization" />
+  </ItemGroup>
+  <ItemGroup>
+    <MCompile Include="jsonm.mg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions\EdgeCollectionExtensions.cs" />
+    <Compile Include="JsonmArray.cs" />
+    <Compile Include="JsonmConsole.cs" />
+    <Compile Include="JsonmObject.cs" />
+    <Compile Include="JsonmParser.cs" />
+    <Compile Include="ParserErrorException.cs" />
+    <Compile Include="ParserErrorReporter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="sample.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Target Name="Build">
+    <Error Condition="!Exists('$(MTargetsPath)\Microsoft.M.Embedded.targets')" Text="The M targets file '$(MTargetsPath)\Microsoft.M.Embedded.targets' can not be found.  You must install the Oslo SDK to build this project." />
+  </Target>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Condition="Exists('$(MTargetsPath)\Microsoft.M.Embedded.targets')" Project="$(MTargetsPath)\Microsoft.M.Embedded.targets" />
+</Project>

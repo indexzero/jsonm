@@ -1,0 +1,18 @@
+﻿{
+    "Object" : 
+    {
+        "String" : "StringValue",
+        "Number" : -1.4e1,
+        "null"   : null,
+        "true"   : true,
+        "false"  : false,
+    },
+    
+    "Array"  : [ "StringValue", 42, null, false, true ],
+    "String" : "StringValue",
+    "Empty"  : "",
+    "Number" : -1.4e1,
+    "null"   : null,
+    "true"   : true,
+    "false"  : false,
+}
