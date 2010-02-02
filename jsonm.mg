@@ -8,7 +8,7 @@
       = ObjectStart first:KeyValuePair rest:ObjectPart* ObjectEnd => Object { Pairs { first, valuesof(rest) } };
     
     syntax ObjectPart
-      = Comma pair:KeyValuePair Comma? => pair;
+      = Comma pair:KeyValuePair => pair;
       
     syntax KeyValuePair
       = key:String Colin value:Value => Pair { Key { key }, Value { value } };
@@ -17,7 +17,7 @@
       = ArrayStart first:Value rest:ArrayPart* ArrayEnd => Array [ first, valuesof(rest) ];
     
     syntax ArrayPart
-      = Comma value:Value Comma? => value;
+      = Comma value:Value => value;
     
     syntax Value 
       = string:String => string

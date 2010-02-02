@@ -6,30 +6,61 @@ using Microsoft.M;
 using System.Dataflow;
 using System.IO;
 using jsonm.Extensions;
+using System.Dynamic;
 
 namespace jsonm
 {
     public class JsonmParser
     {
-        Parser grammarParser;
+        /// <summary>
+        /// The underlying GLR parser provided by MGrammar.
+        /// </summary>
+        private static readonly Parser grammarParser;
 
-        public JsonmParser()
-        {
-            this.ConstructParserFromMxImage();
-        }
+        /// <summary>
+        /// A lookup table of handlers for parsing json values.
+        /// </summary>
+        private Dictionary<string, Func<Node, object>> valueParsers;
 
-        private void ConstructParserFromMxImage()
+        /// <summary>
+        /// A lookup table of handlers for parsing primitive json values.
+        /// </summary>
+        private Dictionary<string, Func<object>> primitiveParsers;
+
+        /// <summary>
+        /// Initializes static members of the <see cref="JsonmParser"/> class.
+        /// </summary>
+        static JsonmParser()
         {
             try
             {
                 MImage grammar = new MImage(@"jsonm.mx");
-                this.grammarParser = grammar.ParserFactories["jsonm.jsonm"].Create();
-                this.grammarParser.GraphBuilder = new NodeGraphBuilder();
+                grammarParser = grammar.ParserFactories["jsonm.jsonm"].Create();
+                grammarParser.GraphBuilder = new NodeGraphBuilder();
             }
             catch (Exception ex)
             {
                 // TODO: Break and post some exception here...
             }
+        }
+
+        public JsonmParser()
+        {
+            this.valueParsers = new Dictionary<string, Func<Node, object>>()
+            {
+                { "Object", node => this.ParseObject(node) },
+                { "Array", node => this.ParseArray(node, new JsonmArray()) },
+                { "String", node => this.ParseString(node) },
+                { "Number", node => this.ParseNumber(node) },
+                { "Primitive", node => this.ParsePrimitive(node) }
+            };
+
+            this.primitiveParsers = new Dictionary<string, Func<object>>()
+            {
+                { "false", () => false },
+                { "true", () => true },
+                { "null", () => null }
+            };
         }
 
         /// <summary>
@@ -55,8 +86,9 @@ namespace jsonm
             {
                 var inputText = new StringTextStream(sourceText);
                 var errorReporter = new ParserErrorReporter();
-                Node rootNode = (Node)this.grammarParser.Parse(inputText, errorReporter);
-                return this.ParseObject(rootNode);
+                Node rootNode = (Node)grammarParser.Parse(inputText, errorReporter);
+                JsonmObject obj = this.ParseObject(rootNode);
+                return obj;
             }
             catch (Exception ex)
             {
@@ -71,19 +103,68 @@ namespace jsonm
             JsonmObject jsonmObject = new JsonmObject();
 
             List<Tuple<string, object>> keyValuePairs = objectNode
-                .Edges
-                .FindNodeWithBrand("Pairs")
-                .Edges
-                .FindNodesWithBrand("Pair")
+                .Edges.FindNodeWithBrand("Pairs")
+                .Edges.FindNodesWithBrand("Pair")
                 .Select(node => this.ParseKeyValuePair(node))
                 .ToList();
+
+            foreach (Tuple<string, object> pair in keyValuePairs)
+            {
+                jsonmObject.TrySetMember(
+                    new DynamicDictionaryMemberBinder(pair.Item1, false), 
+                    pair.Item2);
+            }
 
             return jsonmObject;
         }
 
         private Tuple<string, object> ParseKeyValuePair(Node pairNode)
         {
-            return new Tuple<string, object>("1", "1");
+            string key = (string)pairNode
+                .Edges.FindNodeWithBrand("Key")
+                .Edges.First().Node
+                .Edges.FirstAtomicValue();
+
+            object value = pairNode
+                .Edges.FindNodeWithBrand("Value")
+                .Edges.Select(edge => this.ParseValue(edge.Node))
+                .First();
+
+            return new Tuple<string, object>(key, value);
+        }
+
+        private object ParseValue(Node valueNode)
+        {
+            return this.valueParsers[valueNode.Brand.Text](valueNode);
+        }
+
+        private JsonmArray ParseArray(Node arrayNode, JsonmArray array)
+        {
+            if (arrayNode.Edges.Count <= 0)
+            {
+                return array;
+            }
+
+            Node head = arrayNode.Edges.FindNodeAtLabeledEdge("Head");
+            Node tail = arrayNode.Edges.FindNodeAtLabeledEdge("Tail");
+
+            array.Add(this.ParseValue(head));
+            return this.ParseArray(tail, array);
+        }
+
+        private object ParsePrimitive(Node primitiveNode)
+        {
+            return this.primitiveParsers[(string)primitiveNode.Edges.FirstAtomicValue()]();
+        }
+
+        private double ParseNumber(Node numberNode)
+        {
+            return double.Parse((string)numberNode.Edges.FirstAtomicValue());
+        }
+
+        private string ParseString(Node stringNode)
+        {
+            return stringNode.Edges.Count > 0 ? ((string)stringNode.Edges.FirstAtomicValue()) : string.Empty;
         }
     }
 }

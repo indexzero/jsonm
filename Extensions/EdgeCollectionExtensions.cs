@@ -22,5 +22,15 @@ namespace jsonm.Extensions
         {
             return edges.Where(edge => edge.Node.Brand.Text.Equals(brand)).Select(edge => edge.Node);
         }
+
+        public static object FirstAtomicValue(this EdgeCollection edges)
+        {
+            return edges.Where(edge => edge.Node.NodeKind == NodeKind.Atomic).First().Node.AtomicValue;
+        }
+
+        public static Node FindNodeAtLabeledEdge(this EdgeCollection edges, string label)
+        {
+            return edges.Where(edge => edge.Label.Text.Equals(label)).FirstOrDefault().Node;
+        }
     }
 }

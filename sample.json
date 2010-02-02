@@ -5,14 +5,13 @@
         "Number" : -1.4e1,
         "null"   : null,
         "true"   : true,
-        "false"  : false,
+        "false"  : false
     },
-    
-    "Array"  : [ "StringValue", 42, null, false, true ],
+    "Array"  : [ "StringValue", 42, false, true, null ],
     "String" : "StringValue",
     "Empty"  : "",
     "Number" : -1.4e1,
     "null"   : null,
     "true"   : true,
-    "false"  : false,
+    "false"  : false
 }

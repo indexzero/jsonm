@@ -6,7 +6,10 @@ using System.Dynamic;
 
 namespace jsonm
 {
-    public class JsonmObject : DynamicObject
+    public class JsonmObject : DynamicDictionary
     {
+        public JsonmObject()
+        {
+        }
     }
 }
