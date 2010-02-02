@@ -50,7 +50,9 @@
     <Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <MCompile Include="jsonm.mg" />
+    <MCompile Include="jsonm.mg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </MCompile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DynamicDictionary.cs" />

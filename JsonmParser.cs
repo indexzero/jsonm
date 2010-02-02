@@ -37,6 +37,27 @@ namespace jsonm
                 MImage grammar = new MImage(@"jsonm.mx");
                 grammarParser = grammar.ParserFactories["jsonm.jsonm"].Create();
                 grammarParser.GraphBuilder = new NodeGraphBuilder();
+                
+                // Remark: Alternate parser generation approach; causes grammarParser.Parse to return a SimpleNode
+                ////using (var r = new StreamReader(Environment.CurrentDirectory + @"\..\..\jsonm.mg"))
+                ////{
+                ////    var options = new CompilerOptions
+                ////    {
+                ////        Sources = 
+                ////        { 
+                ////            new TextItem
+                ////            {
+                ////                Name = "I Need A Name",
+                ////                Reader = r,
+                ////                ContentType = TextItemType.MGrammar
+                ////            }
+                ////        }
+                ////    };
+
+                ////    CompilationResults results = Compiler.Compile(options);
+                ////    grammarParser = results.ParserFactories["jsonm.jsonm"].Create();
+                ////}
+
             }
             catch (Exception ex)
             {
@@ -111,7 +132,7 @@ namespace jsonm
             foreach (Tuple<string, object> pair in keyValuePairs)
             {
                 jsonmObject.TrySetMember(
-                    new DynamicDictionaryMemberBinder(pair.Item1, false), 
+                    new DynamicDictionaryMemberBinder(pair.Item1, false),
                     pair.Item2);
             }
 
