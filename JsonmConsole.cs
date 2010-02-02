@@ -10,7 +10,7 @@ namespace jsonm
         static void Main(string[] args)
         {
             JsonmParser parser = new JsonmParser();
-            dynamic result = parser.Parse(new Uri(@"C:\Users\Charlie\Self\GitHub\jsonm\sample.json"));
+            dynamic result = parser.Parse(new Uri(Environment.CurrentDirectory + @"\sample.json"));
             Console.Out.WriteLine(result.Object);
         }
     }
