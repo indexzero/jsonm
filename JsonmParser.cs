@@ -38,7 +38,7 @@ namespace jsonm
                 grammarParser = grammar.ParserFactories["jsonm.jsonm"].Create();
                 grammarParser.GraphBuilder = new NodeGraphBuilder();
                 
-                // Remark: Alternate parser generation approach; causes grammarParser.Parse to return a SimpleNode
+                // Remark: Alternate parser generation approach; dynamic compilation notably slower
                 ////using (var r = new StreamReader(Environment.CurrentDirectory + @"\..\..\jsonm.mg"))
                 ////{
                 ////    var options = new CompilerOptions
@@ -56,6 +56,7 @@ namespace jsonm
 
                 ////    CompilationResults results = Compiler.Compile(options);
                 ////    grammarParser = results.ParserFactories["jsonm.jsonm"].Create();
+                ////    grammarParser.GraphBuilder = new NodeGraphBuilder();
                 ////}
 
             }
