@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace jsonm
+namespace Jsonm
 {
-    class JsonmConsole
+    public class JsonmConsole
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             JsonmParser parser = new JsonmParser();
             dynamic result = parser.Parse(new Uri(Environment.CurrentDirectory + @"\sample.json"));

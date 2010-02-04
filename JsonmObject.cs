@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Dynamic;
 
-namespace jsonm
+namespace Jsonm
 {
     public class JsonmObject : DynamicDictionary
     {

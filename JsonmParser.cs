@@ -1,15 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.M;
-using System.Dataflow;
-using System.IO;
-using jsonm.Extensions;
-using System.Dynamic;
+﻿//-----------------------------------------------------------------------
+// <copyright file="JsonmParser.cs" company="Charlie Robbins">
+//     Copyright (c) Charlie Robbins.  All rights reserved.
+// </copyright>
+// <license>
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+// </license>
+// <summary>Contains the JsonmParser class.</summary>
+//-----------------------------------------------------------------------
 
-namespace jsonm
+namespace Jsonm
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Dataflow;
+    using System.IO;
+    using System.Linq;
+    using Jsonm.Extensions;
+    using Microsoft.M;
+
+    /// <summary>
+    /// An JSON parser using MGrammar and MGraph.
+    /// </summary>
     public class JsonmParser
     {
         /// <summary>
@@ -58,7 +88,6 @@ namespace jsonm
                 ////    grammarParser = results.ParserFactories["jsonm.jsonm"].Create();
                 ////    grammarParser.GraphBuilder = new NodeGraphBuilder();
                 ////}
-
             }
             catch (Exception ex)
             {
@@ -66,6 +95,9 @@ namespace jsonm
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonmParser"/> class.
+        /// </summary>
         public JsonmParser()
         {
             this.valueParsers = new Dictionary<string, Func<Node, object>>()
@@ -86,11 +118,11 @@ namespace jsonm
         }
 
         /// <summary>
-        /// Parses the json source text located at the specified source URI
+        /// Parses the JSON source text located at the specified source URI
         /// into an appropriate dynamic object.
         /// </summary>
-        /// <param name="sourceUri">The json source URI.</param>
-        /// <returns>A dynamic object representing the json source text.</returns>
+        /// <param name="sourceUri">The JSON source URI.</param>
+        /// <returns>A dynamic object representing the JSON source text.</returns>
         public JsonmObject Parse(Uri sourceUri)
         {
             string sourceText = File.OpenText(sourceUri.AbsolutePath).ReadToEnd();
@@ -98,9 +130,9 @@ namespace jsonm
         }
 
         /// <summary>
-        /// Parses the json source text into an appropriate dynamic object.
+        /// Parses the JSON source text into an appropriate dynamic object.
         /// </summary>
-        /// <param name="sourceUri">The json source text.</param>
+        /// <param name="sourceText">The JSON source text.</param>
         /// <returns>A dynamic object representing the json source text.</returns>
         public JsonmObject Parse(string sourceText)
         {
@@ -120,6 +152,11 @@ namespace jsonm
             return null;
         }
 
+        /// <summary>
+        /// Parses a JSON object into an appropriate dynamic object.
+        /// </summary>
+        /// <param name="objectNode">The object node.</param>
+        /// <returns>The dynamic object representing the JSON structure.</returns>
         private JsonmObject ParseObject(Node objectNode)
         {
             JsonmObject jsonmObject = new JsonmObject();
@@ -140,6 +177,11 @@ namespace jsonm
             return jsonmObject;
         }
 
+        /// <summary>
+        /// Parses a JSON key-value pair into a Tuple.
+        /// </summary>
+        /// <param name="pairNode">The key-value pair node.</param>
+        /// <returns>The Tuple representing the key-value pair.</returns>
         private Tuple<string, object> ParseKeyValuePair(Node pairNode)
         {
             string key = (string)pairNode
@@ -155,11 +197,22 @@ namespace jsonm
             return new Tuple<string, object>(key, value);
         }
 
+        /// <summary>
+        /// Parses a JSON value into the appropriate object.
+        /// </summary>
+        /// <param name="valueNode">The value node.</param>
+        /// <returns>The object representing the JSON value</returns>
         private object ParseValue(Node valueNode)
         {
             return this.valueParsers[valueNode.Brand.Text](valueNode);
         }
 
+        /// <summary>
+        /// Recursively parses a JSON array into the appropriate JsonmArray.
+        /// </summary>
+        /// <param name="arrayNode">The array node.</param>
+        /// <param name="array">The array to add values to.</param>
+        /// <returns>The array representing the JSON array.</returns>
         private JsonmArray ParseArray(Node arrayNode, JsonmArray array)
         {
             if (arrayNode.Edges.Count <= 0)
@@ -174,16 +227,31 @@ namespace jsonm
             return this.ParseArray(tail, array);
         }
 
+        /// <summary>
+        /// Parses a JSON primitive into an appropriate object.
+        /// </summary>
+        /// <param name="primitiveNode">The primitive node.</param>
+        /// <returns>The object representing the JSON primitive.</returns>
         private object ParsePrimitive(Node primitiveNode)
         {
             return this.primitiveParsers[(string)primitiveNode.Edges.FirstAtomicValue()]();
         }
 
+        /// <summary>
+        /// Parses a JSON number into an appropriate CLR double.
+        /// </summary>
+        /// <param name="numberNode">The number node.</param>
+        /// <returns>The object representing the JSON primitive.</returns>
         private double ParseNumber(Node numberNode)
         {
             return double.Parse((string)numberNode.Edges.FirstAtomicValue());
         }
 
+        /// <summary>
+        /// Parses a JSON string into an appropriate CLR string.
+        /// </summary>
+        /// <param name="stringNode">The string node.</param>
+        /// <returns>The object representing the JSON primitive.</returns>
         private string ParseString(Node stringNode)
         {
             return stringNode.Edges.Count > 0 ? ((string)stringNode.Edges.FirstAtomicValue()) : string.Empty;

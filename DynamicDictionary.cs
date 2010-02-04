@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Dynamic;
 
-namespace jsonm
+namespace Jsonm
 {
     // The class derived from DynamicObject.
     public class DynamicDictionary : DynamicObject

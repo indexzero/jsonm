@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Dataflow;
 
-namespace jsonm.Extensions
+namespace Jsonm.Extensions
 {
     public static class EdgeCollectionExtensions
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace jsonm
+namespace Jsonm
 {
     public class ParserErrorException : Exception
     {

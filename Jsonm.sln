@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "jsonm", "jsonm.csproj", "{94565AC9-F1B4-4B6B-A312-893BE3556E46}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jsonm", "Jsonm.csproj", "{94565AC9-F1B4-4B6B-A312-893BE3556E46}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
